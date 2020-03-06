@@ -2,7 +2,6 @@ import React,{Component} from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import {Button,Form,Table,Tabs,Tab,Container,Row,Col,Alert,Nav,Navbar,Card,Modal,Collapse} from 'react-bootstrap';
-import ReactFileReader from 'react-file-reader';
 
 class Folder extends Component {
   state = {
@@ -19,12 +18,16 @@ class Folder extends Component {
 
 
   componentDidMount = async ()  => {
-    const thread = await this.props.space.joinThreadByAddress(this.props.threadAddress);
+    console.log(window.location.href)
+    const threadAddress = window.location.href.split("/space").pop();
+    console.log(threadAddress)
+    const thread = await this.props.space.joinThreadByAddress(threadAddress);
     this.setState({
       space: this.props.space,
       thread: thread
     })
     const posts = await this.state.thread.getPosts();
+    console.log(posts)
     this.setState({posts});
 
      await this.state.thread.onUpdate(async()=> {
@@ -34,6 +37,7 @@ class Folder extends Component {
      this.setState({
        profile: this.props.profile
      });
+
   };
   addItem = async function(){
     let item
@@ -65,23 +69,6 @@ class Folder extends Component {
 
   };
 
-  handleFiles = files => {
-    ReactDOM.unmountComponentAtNode(document.getElementById('progress_upload'))
-    console.log(files)
-    const fileName = files.fileList[0].name;
-    const fileType = files.fileList[0].type
-    $("#item_name").val(fileName);
-    $("#item_content").html(JSON.stringify({
-      fileName: fileName,
-      fileType: fileType,
-      content: files.base64
-    }));
-    ReactDOM.render(
-      <div>Complete</div>,
-      document.getElementById('progress_upload')
-    )
-  }
-
   fileUpload = async function(){
     try{
       ReactDOM.unmountComponentAtNode(document.getElementById('progress_upload'))
@@ -97,19 +84,21 @@ class Folder extends Component {
 
       reader.onload = function(e) {
 
-                // The file's text will be printed here
+                const base64 = btoa(
+                  new Uint8Array(e.target.result)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
+                );
+                const content = "data:"+fileType+";base64,"+base64
                 $("#item_content").html(JSON.stringify({
                   fileName: fileName,
                   fileType: fileType,
-                  content: e.target.result
+                  content: content
                 }));
-                console.log(e.target.result);
                 console.log(JSON.stringify({
                   fileName: fileName,
                   fileType: fileType,
-                  content: e.target.result
+                  content: content
                 }))
-
                 ReactDOM.render(
                   <div>Complete</div>,
                   document.getElementById('progress_upload')
@@ -174,10 +163,11 @@ class Folder extends Component {
                 <Form>
                   <Form.Group>
                     <Form.Label>File</Form.Label>
-                    <ReactFileReader handleFiles={this.handleFiles} fileTypes={["*"]} base64={true}>
-                      <Button variant="primary">Select File</Button>
-                    </ReactFileReader>
-                    {/*<input type="file" id='input_file' onChange={this.fileUpload} />*/}
+
+                    {/*<Button variant="primary" onClick={this.fileUpload}>Select File</Button>*/}
+                    <input type="file" id='input_file'
+                           onChange={this.fileUpload}
+                           accept="image/*,text/*,application/json"/>
                     <div id='progress_upload'></div>
                   </Form.Group>
                   <Form.Group>

@@ -3,7 +3,14 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import {Button,Form,Table,Tabs,Tab,Container,Row,Col,Alert,Nav,Navbar,Card,Modal,Collapse} from 'react-bootstrap';
 import Folder from './Folder.js';
-
+import {
+  BrowserRouter as Router,
+  Link,
+  Route,
+  Switch,
+  Redirect
+} from 'react-router-dom';
+const AppName = 'DecentralizedFilestore_test1';
 
 class FoldersPage extends Component {
   state = {
@@ -21,9 +28,13 @@ class FoldersPage extends Component {
 
   componentDidMount = async ()  => {
     const thread = await this.props.space.joinThreadByAddress(this.props.threadAddress);
+    const coinbase = this.props.coinbase;
+    const box = this.props.box;
     this.setState({
+      box: this.props.box,
       space: this.props.space,
       thread: thread
+
     })
     const posts = await this.state.thread.getPosts();
     this.setState({posts});
@@ -62,15 +73,26 @@ class FoldersPage extends Component {
   };
 
   openFolder = function(threadAddress){
+    /*
     const removed = ReactDOM.unmountComponentAtNode(document.getElementById("div_folder"))
 
 
     ReactDOM.render(
-      <Folder space={this.state.space} threadAddress={threadAddress} />,
+      <Folder box={this.state.box}
+              space={this.state.space}
+              threadAddress={threadAddress} />,
       document.getElementById('div_folder')
+
+
     );
 
     return
+    */
+    return(
+      <Folder box={this.state.box}
+              space={this.state.space}
+              threadAddress={threadAddress} />
+    )
   }
 
   render(){
@@ -90,7 +112,8 @@ class FoldersPage extends Component {
                       <div>
                         <Row>
                           <Col lg={8}>
-                            <Button variant="primary" onClick={()=>{that.openFolder(threadAddress)}}>{name}</Button>
+                            <Button variant="primary"><Link to={"/space"+threadAddress}
+                                                            style={{all: 'unset'}}>{name}</Link></Button>
                           </Col>
                           <Col lg={4}>
                             <Button variant="danger" onClick={()=>{that.deleteFolder(postId,threadAddress)}}>X</Button>
@@ -111,6 +134,14 @@ class FoldersPage extends Component {
               <Button onClick={this.createFolder}>Create</Button>
             </Col>
           </Row>
+          <Switch>
+            <Route path="/space/:threadAddress" render={() => {
+              return(
+                <Folder box={this.state.box}
+                        space={this.state.space}/>
+              )
+            }} />
+          </Switch>
           <div  style={{paddingTop: '20px'}} id='div_folder'></div>
         </div>
       )

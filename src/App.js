@@ -4,15 +4,21 @@ import Web3 from "web3";
 import Authereum from 'authereum'
 import $ from 'jquery';
 import {Button,Form,Table,Tabs,Tab,Container,Row,Col,Alert,Nav,Navbar,Card,Modal,Collapse} from 'react-bootstrap';
+import {
+  BrowserRouter as Router,
+  Link,
+  Route,
+  Switch,
+  Redirect
+} from 'react-router-dom';
+import Home from './components/Home.js';
+import Menu from './components/Menu.js';
 import FoldersPage from './components/FoldersPage.js';
 import "./App.css";
 import "./assets/scss/argon-dashboard-react.scss";
 
-const Box = require('3box');
-const AppName = 'DecentralizedFilestore_test0';
-
-
-
+const Box = require('3box')
+const AppName = 'DecentralizedFilestore_test1';
 class App extends Component {
   state = {
     hasWeb3:false,
@@ -20,23 +26,7 @@ class App extends Component {
     box: null,
     space: null,
     doingLogin:false,
-    foldersAddr: null,
-    page: <Container></Container>,
-    footer: <footer style={{marginTop: '20px'}}>
-              <Row>
-                <Col lg={4}>
-                  <p>Proudly done using <a href="https://3box.com" target='_blank' title='3Box'>3Box</a></p>
-                </Col>
-                <Col lg={4}>
-                  <p>Support by using <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a> or donating</p>
-                </Col>
-                <Col lg={4}>
-                  <p>Use a private,fast and secure browser</p>
-                  <p>Earn rewards in BAT token while browsing</p>
-                  <p>Install <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a></p>
-                </Col>
-              </Row>
-            </footer>
+    foldersAddr: null
    };
   constructor(props){
     super(props)
@@ -44,14 +34,10 @@ class App extends Component {
     this.logout = this.logout.bind(this);
     this.login = this.login.bind(this);
 
-    this.foldersPage = this.foldersPage.bind(this);
-    this.setLoginItem = this.setLoginItem.bind(this);
-    this.homePage = this.homePage.bind(this);
-    this.loginPageNoWeb3 = this.loginPageNoWeb3.bind(this);
     this.openSpace = this.openSpace.bind(this);
   }
   componentDidMount = async () => {
-    this.homePage();
+
     if(window.ethereum){
       this.setState({
         hasWeb3:true
@@ -61,16 +47,19 @@ class App extends Component {
       const profile = this.state.profile;
       let hasFolders = false;
       let foldersAddr;
-      for(const item of Object.values(profile)){
-        if(item.address.split(".").pop()=="Folders"){
-          hasFolders = true
-          foldersAddr = item.address
+      if(profile){
+        for(const item of Object.values(profile)){
+          if(item.address.split(".").pop()=="Folders"){
+            hasFolders = true
+            foldersAddr = item.address
+          }
+        }
+        if(!hasFolders){
+          const thread = await space.createConfidentialThread("Folders");
+          foldersAddr = thread.address;
         }
       }
-      if(!hasFolders){
-        const thread = await space.createConfidentialThread("Folders");
-        foldersAddr = thread.address;
-      }
+
 
       this.setState({
         foldersAddr: foldersAddr
@@ -107,6 +96,7 @@ class App extends Component {
         document.getElementById("loading_status")
       );
       const box = await Box.openBox(coinbase,window.ethereum);
+
       //const space = await box.openSpace(AppName);
       ReactDOM.render(
         <p>Syncing your profile</p>,
@@ -118,7 +108,7 @@ class App extends Component {
         box: box
       });
       await this.openSpace();
-
+      console.log(box._3id);
     } catch (error) {
       // Catch any errors for any of the above operations.
 
@@ -129,7 +119,7 @@ class App extends Component {
     }
   }
   logout = async function(){
-    this.homePage();
+
     await this.state.box.logout();
 
     this.setState({
@@ -140,122 +130,6 @@ class App extends Component {
       space: null
     })
   };
-  homePage = function() {
-    this.setState({
-      page:  <Container>
-
-              <Card>
-              <Card.Header as="h3">Welcome to Decentralized Filestore</Card.Header>
-              <Card.Body>
-                <Row>
-                  <Col sm={6}>
-                    <Card>
-                      {/*<Card.Img variant="top" src="./imgs/ipfs.png" />*/}
-                      <Card.Body>
-                        <Card.Title>Decentralized storage</Card.Title>
-                        <Card.Text>Everything is stored in <a href='https://ipfs.io' target='_blank' title='Interplanetary File System'>IPFS</a> using <a href='https://orbitdb.org/' target='_blank' title='OrbitDB'>OrbitDB</a> and linked to your decentralized identity thanks to <a href="https://3box.com" target='_blank' title='3Box'>3Box</a></Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col sm={6}>
-                    <Card>
-                      {/*<Card.Img variant="top" src="./imgs/ipfs.png" />*/}
-                      <Card.Body>
-                        <Card.Title>Share same data in multiple dapps</Card.Title>
-                        <Card.Text>Every dapp that uses 3Box can request same data you input here.</Card.Text>
-                      </Card.Body>
-                    </Card>
-                    <h4></h4>
-
-                  </Col>
-                </Row>
-              </Card.Body>
-              </Card>
-              <hr/>
-              <Card>
-              <Card.Header as="h3">Informations</Card.Header>
-              <Card.Body>
-                <Row>
-                  <Col sm={6}>
-                    <Card>
-                      {/*<Card.Img variant="top" src="./imgs/ipfs.png" />*/}
-                      <Card.Body>
-                        <Card.Title>How to use it?</Card.Title>
-                        <Card.Text>Step by step on how to use DecentralizedPortfolio</Card.Text>
-                        <Button variant="primary" onClick={this.tutorialPage}>Tutorial</Button>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-
-                  {/*<Col sm={6}>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>Roadmap</Card.Title>
-                      <Card.Text>What will be the future of that dapp?</Card.Text>
-                      <Button variant="primary">Roadmap</Button>
-                    </Card.Body>
-                  </Card>
-
-                  </Col>*/}
-                </Row>
-              </Card.Body>
-              </Card>
-            </Container>
-    })
-    return
-  }
-
-
-  foldersPage = async function(){
-
-    this.setState({
-      page: <FoldersPage space={this.state.space} threadAddress={this.state.foldersAddr} />
-    })
-    return
-  }
-
-
-  tutorialPage = async() =>{
-    this.setState({
-      page:      <Card>
-                  <Card.Header as="h3">Tutorial</Card.Header>
-                  <Card.Body>
-                    <Card.Title>How to use this dapp?</Card.Title>
-                    <Card.Text>
-                    <ol>
-                      <li>Install <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a></li>
-                      <li>
-                        Create your ethereum wallet (or import existing one) <br/>
-                        <img src={require('./imgs/brave_Crypto0.png')} style={{maxWidth:' 60%'}}/> <br/>
-                        <img src={require('./imgs/brave_Crypto1.png')} style={{maxWidth:' 60%'}}/> <br/>
-                        <img src={require('./imgs/brave_Crypto2.png')} style={{maxWidth:' 60%'}}/>
-                      </li>
-                      <li>
-                        Accept wallet connection, 3box login/sign up and open DecentralizedPortfolio space <br/>
-                        <img src={require('./imgs/brave_3box.png')} style={{maxWidth:' 60%'}}/> <br/>
-                      </li>
-                      {/*<li>
-                        Fill your profile <br/>
-                        <img src={require('./imgs/brave_3boxProfiles.png')} style={{maxWidth:' 60%'}}/> <br/>
-                      </li>*/}
-
-                    </ol>
-
-                     </Card.Text>
-                    <Button variant='primary' onClick={this.homePage}>HomePage</Button>
-                  </Card.Body>
-                 </Card>
-    })
-    return
-  }
-  loginPageNoWeb3 = function(){
-    this.setState({
-      page: <div>
-               <p>Use <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a> or login with <a href="#auth_login" onClick={this.login}>authereum</a></p>
-            </div>
-    });
-    return
-  }
 
   openSpace = async function(){
     const coinbase = this.state.coinbase;
@@ -267,7 +141,8 @@ class App extends Component {
     );
     $("#alert_info").show();
     const space = await box.openSpace(AppName);
-
+    console.log(await space.user.encrypt("cu"));
+    console.log(space)
     ReactDOM.render(
       <p>Opening your profile</p>,
       document.getElementById("loading_status")
@@ -284,109 +159,122 @@ class App extends Component {
     return;
   }
 
-  setLoginItem = function(){
-    if(!this.state.hasWeb3){
-      return(
-        <Nav.Link href="#login" onClick={this.loginPageNoWeb3}>Login</Nav.Link>
-      )
-    }
-    return(
-      <Nav.Link href="#login" onClick={this.login}>Login</Nav.Link>
-    )
-  }
   render() {
 
-    if ((!this.state.box || !this.state.space) && !this.state.doingLogin) {
+    if(this.state.foldersAddr || !this.state.hasWeb3){
       return (
         <div>
-          <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
-            <Navbar.Brand href="#home" onClick={this.homePage}>Decentralized Filestore</Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="mr-auto">
-                <Nav.Link href="#home" onClick={this.homePage}>Home</Nav.Link>
-                {
-                  this.setLoginItem()
-                }
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-          <Container className="themed-container" fluid={true}>
+          <Router>
+            <Menu space={this.state.space} hasWeb3={this.state.hasWeb3} doingLogin={this.state.doingLogin} />
 
-          <Container>
-          {
-            this.state.page
-          }
-          </Container>
-          {
-            this.state.footer
-          }
-          </Container>
+            <Container className="themed-container" fluid={true}>
 
-        </div>
-      );
-    }
+             <Alert variant="default" style={{textAlign: "center",display:"none"}} id='alert_info'>
+                  <h4>Loading dapp ...</h4>
+                  <div id="loading_status"></div>
+              </Alert>
 
-    if(this.state.doingLogin){
+              <Switch>
+                    <Route path="/home" component={Home} />
+                    <Route path="/space" render={() => {
+                      if(!this.state.foldersAddr){
+                        return(
+                          <Redirect to="/home" />
+                        )
+                      }
+                      return(
+                        <FoldersPage coinbase={this.state.coinbase}
+                                          box={this.state.box}
+                                          space={this.state.space}
+                                          threadAddress={this.state.foldersAddr} />
+                      )
+                    }} />
+                    <Route path="/loginNoWeb3" render={() => {
+                      return(
+                        <div>
+                           <p>Use <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a> or login with <a href="#auth_login" onClick={this.login}>authereum</a></p>
+                        </div>
+                      )
+                    }} />
+                    <Route path="/login" render={() => {
+                      if(!this.state.hasWeb3){
+                        return(
+                          <Redirect to="/loginNoWeb3" />
+                        );
+                      }
+                      return(
+                        this.login()
+                      )
+                    }} />
+                    <Route path="/logout" render={() => {
+                      if(!this.state.space){
+                        return(
+                          <Redirect to="/home" />
+                        );
+                      }
+                      return(
+                        this.logout()
+                      )
+                    }} />
+                    <Route render={() => {
+                      return(
+                        <Redirect to="/home" />
+                      );
+                    }} />
+              </Switch>
 
-      return(
-        <div>
-          <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark" >
-            <Navbar.Brand href="#home">Decentralized Filestore</Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar>
-          <Container className="themed-container" fluid={true}>
-
-            <Alert variant="default" style={{textAlign: "center"}}>
-              <h4>Loading dapp ...</h4>
-              <div id="loading_status"></div>
-
-            </Alert>
-            <Container>
-            {
-              this.state.page
-            }
             </Container>
-            {
-              this.state.footer
-            }
-          </Container>
-
+          </Router>
+          <footer style={{marginTop: '20px'}}>
+                    <Row>
+                      <Col lg={4}>
+                        <p>Proudly done using <a href="https://3box.com" target='_blank' title='3Box'>3Box</a></p>
+                      </Col>
+                      <Col lg={4}>
+                        <p>Support by using <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a> or donating</p>
+                      </Col>
+                      <Col lg={4}>
+                        <p>Use a private,fast and secure browser</p>
+                        <p>Earn rewards in BAT token while browsing</p>
+                        <p>Install <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a></p>
+                      </Col>
+                    </Row>
+           </footer>
         </div>
       );
     }
-
-    return (
+    return(
       <div>
-        <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
-          <Navbar.Brand href="#home" onClick={this.homePage}>Decentralized Filestore</Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="mr-auto">
-              <Nav.Link href="#home" onClick={this.foldersPage}>Space</Nav.Link>
-              <Nav.Link href="#logout" onClick={this.logout}>Logout</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
+        <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark" >
+          <Navbar.Brand href="#home">Decentralized Filestore</Navbar.Brand>
+          <Navbar.Toggle />
         </Navbar>
         <Container className="themed-container" fluid={true}>
 
-          <Alert variant="default" style={{textAlign: "center",display:"none"}} id='alert_info'>
+          <Alert variant="default" style={{textAlign: "center"}}>
             <h4>Loading dapp ...</h4>
             <div id="loading_status"></div>
 
           </Alert>
-          <Container>
-          {
-            this.state.page
-          }
-          </Container>
-          {
-            this.state.footer
-          }
         </Container>
-
+        <footer style={{marginTop: '20px'}}>
+                  <Row>
+                    <Col lg={4}>
+                      <p>Proudly done using <a href="https://3box.com" target='_blank' title='3Box'>3Box</a></p>
+                    </Col>
+                    <Col lg={4}>
+                      <p>Support by using <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a> or donating</p>
+                    </Col>
+                    <Col lg={4}>
+                      <p>Use a private,fast and secure browser</p>
+                      <p>Earn rewards in BAT token while browsing</p>
+                      <p>Install <a href="https://brave.com/?ref=hen956" target='_blank' title='Brave Browser'>Brave Browser</a></p>
+                    </Col>
+                  </Row>
+        </footer>
       </div>
     );
+
 
   }
 }
