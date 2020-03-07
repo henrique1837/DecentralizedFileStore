@@ -3,6 +3,7 @@ import {Button,Form,Table,Tabs,Tab,Container,Row,Col,Alert,Nav,Navbar,Card,Modal
 import {Link} from 'react-router-dom';
 class Menu extends Component {
   state = {
+    box: null,
     space: null,
     hasWeb3: null,
     isLoggedIn: null
@@ -11,13 +12,16 @@ class Menu extends Component {
   constructor(props){
     super(props)
     this.setLoginItem = this.setLoginItem.bind(this);
+    this.logout = this.logout.bind(this);
   }
   componentDidMount = function(){
     this.setState({
+      box: this.props.box,
       space: this.props.space,
       hasWeb3: this.props.hasWeb3,
       doingLogin: this.props.doingLogin
     })
+    console.log(this.state)
   }
 
   setLoginItem = function(){
@@ -29,6 +33,17 @@ class Menu extends Component {
     return(
       <Nav.Link><Link to="/login" style={{all: 'unset'}}>Login</Link></Nav.Link>
     )
+  }
+
+  logout = async function(){
+    await this.state.box.logout();
+    this.setState({
+      box: null,
+      space: null,
+      hasWeb3: this.props.hasWeb3,
+      isLoggedIn: null
+    })
+    return;
   }
 
   render(){
@@ -55,7 +70,7 @@ class Menu extends Component {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link><Link to="/space" style={{all: 'unset'}}>Space</Link></Nav.Link>
-            <Nav.Link><Link to="/logout" style={{all: 'unset'}}>Logout</Link></Nav.Link>
+            <Nav.Link><Link to="/logout" style={{all: 'unset'}} onClick={this.logout}>Logout</Link></Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

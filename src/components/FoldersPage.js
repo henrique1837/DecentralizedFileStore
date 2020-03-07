@@ -21,7 +21,7 @@ class FoldersPage extends Component {
 
   constructor(props){
     super(props);
-    this.openFolder = this.openFolder.bind(this);
+
     this.createFolder = this.createFolder.bind(this);
   }
 
@@ -72,29 +72,6 @@ class FoldersPage extends Component {
     }
   };
 
-  openFolder = function(threadAddress){
-    /*
-    const removed = ReactDOM.unmountComponentAtNode(document.getElementById("div_folder"))
-
-
-    ReactDOM.render(
-      <Folder box={this.state.box}
-              space={this.state.space}
-              threadAddress={threadAddress} />,
-      document.getElementById('div_folder')
-
-
-    );
-
-    return
-    */
-    return(
-      <Folder box={this.state.box}
-              space={this.state.space}
-              threadAddress={threadAddress} />
-    )
-  }
-
   render(){
     const that = this;
     if(this.state.thread && this.state.posts){
@@ -135,14 +112,13 @@ class FoldersPage extends Component {
             </Col>
           </Row>
           <Switch>
-            <Route path="/space/:threadAddress" render={() => {
+            <Route path="/space/orbitdb/:id/:name" component={() => {
               return(
                 <Folder box={this.state.box}
                         space={this.state.space}/>
               )
             }} />
           </Switch>
-          <div  style={{paddingTop: '20px'}} id='div_folder'></div>
         </div>
       )
     }

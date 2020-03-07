@@ -18,7 +18,6 @@ class Folder extends Component {
 
 
   componentDidMount = async ()  => {
-    console.log(window.location.href)
     const threadAddress = window.location.href.split("/space").pop();
     console.log(threadAddress)
     const thread = await this.props.space.joinThreadByAddress(threadAddress);
