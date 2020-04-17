@@ -20,3 +20,14 @@
 .App-link {
   color: #09d3ac;
 }
+#root{
+  width: 100%
+}
+
+
+ #sc-launcher {
+   height: 0px;
+ }
+ .popupChat{
+   position: fixed;
+ }
