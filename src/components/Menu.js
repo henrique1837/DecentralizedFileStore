@@ -1,26 +1,6 @@
 import React,{Component} from 'react';
-
+import {Button,Form,Table,Tabs,Tab,Container,Row,Col,Alert,Nav,Navbar,Card,Modal,Collapse} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {
-  Button,
-  Form,
-  Table,
-  Tabs,
-  Tab,
-  Container,
-  Row,
-  Col,
-  Alert,
-  Card,
-  Modal,
-  Collapse,
-  UncontrolledCollapse,
-  Nav,
-  NavbarBrand,
-  Navbar,
-  NavItem,
-  NavLink
-} from 'reactstrap';
 class Menu extends Component {
   state = {
     box: null,
@@ -41,27 +21,20 @@ class Menu extends Component {
       hasWeb3: this.props.hasWeb3,
       doingLogin: this.props.doingLogin
     })
+    console.log(this.state)
   }
 
   setLoginItem = function(){
     if(!this.state.hasWeb3){
       return(
-        <Link to={"/loginNoWeb3"} >
-          <NavLink>
-            Login
-          </NavLink>
-        </Link>
+        <Nav.Link><Link to="/loginNoWeb3" style={{all: 'unset'}}>Login</Link></Nav.Link>
       )
     }
     return(
-
-      <Link to={"/login"}>
-        <NavLink>
-          Login
-        </NavLink>
-      </Link>
+      <Nav.Link><Link to="/login" style={{all: 'unset'}}>Login</Link></Nav.Link>
     )
   }
+
   logout = async function(){
     await this.state.box.logout();
     this.setState({
@@ -74,195 +47,32 @@ class Menu extends Component {
   }
 
   render(){
-    if(!this.state.box){
+    if(!this.state.space){
       return(
-        <Navbar
-          className="navbar-horizontal navbar-dark bg-primary mt-4"
-          expand="lg"
-        >
-          <Container>
-
-            <NavbarBrand href="#DecentralizedPortfolio">
-                DecentralizedPortfolio
-            </NavbarBrand>
-            <button
-              aria-controls="navbar-primary"
-              aria-expanded={false}
-              aria-label="Toggle navigation"
-              className="navbar-toggler"
-              data-target="#navbar-primary"
-              data-toggle="collapse"
-              id="navbar-primary"
-              type="button"
-            >
-              <span className="navbar-toggler-icon" />
-            </button>
-            <UncontrolledCollapse navbar toggler="#navbar-primary">
-              <div className="navbar-collapse-header">
-                <Row>
-                  <Col className="collapse-brand" xs="6">
-                    <NavbarBrand href="#DecentralizedPortfolio">
-                        DecentralizedPortfolio
-                    </NavbarBrand>
-                  </Col>
-                  <Col className="collapse-close" xs="6">
-                    <button
-                      aria-controls="navbar-primary"
-                      aria-expanded={false}
-                      aria-label="Toggle navigation"
-                      className="navbar-toggler"
-                      data-target="#navbar-primary"
-                      data-toggle="collapse"
-                      id="navbar-primary"
-                      type="button"
-                    >
-                      <span />
-                      <span />
-                    </button>
-                  </Col>
-                </Row>
-              </div>
-              <Nav className="ml-lg-auto" navbar>
-                <NavItem>
-                  <Link to={"/home"}>
-                    <NavLink>
-                      Home
-                    </NavLink>
-                  </Link>
-                </NavItem>
-                <NavItem>
-                  <Link to={"/users"}>
-                    <NavLink>
-                      Users
-                    </NavLink>
-                  </Link>
-                </NavItem>
-                <NavItem>
-                  <Link to={"/jobs"}>
-                    <NavLink>
-                      Jobs
-                    </NavLink>
-                  </Link>
-                </NavItem>
-                <NavItem>
-                  <Link to={"/comments"}>
-                    <NavLink>
-                      Comments
-                    </NavLink>
-                  </Link>
-                </NavItem>
-                <NavItem>
-                {
-                  this.setLoginItem()
-                }
-                </NavItem>
-              </Nav>
-
-            </UncontrolledCollapse>
-          </Container>
+        <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+          <Navbar.Brand><Link to="/home" style={{all: 'unset'}}>Decentralized Filestore</Link></Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="mr-auto">
+              {
+                this.setLoginItem()
+              }
+            </Nav>
+          </Navbar.Collapse>
         </Navbar>
       );
     }
 
     return(
-      <Navbar
-        className="navbar-horizontal navbar-dark bg-primary mt-4"
-        expand="lg"
-      >
-        <Container>
-          <NavbarBrand href="#DecentralizedPortfolio">
-              DecentralizedPortfolio
-          </NavbarBrand>
-          <button
-            aria-controls="navbar-primary"
-            aria-expanded={false}
-            aria-label="Toggle navigation"
-            className="navbar-toggler"
-            data-target="#navbar-primary"
-            data-toggle="collapse"
-            id="navbar-primary"
-            type="button"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-          <UncontrolledCollapse navbar toggler="#navbar-primary">
-            <div className="navbar-collapse-header">
-              <Row>
-                <Col className="collapse-brand" xs="6">
-                  <NavbarBrand href="#DecentralizedPortfolio">
-                      DecentralizedPortfolio
-                  </NavbarBrand>
-                </Col>
-                <Col className="collapse-close" xs="6">
-                  <button
-                    aria-controls="navbar-primary"
-                    aria-expanded={false}
-                    aria-label="Toggle navigation"
-                    className="navbar-toggler"
-                    data-target="#navbar-primary"
-                    data-toggle="collapse"
-                    id="navbar-primary"
-                    type="button"
-                  >
-                    <span />
-                    <span />
-                  </button>
-                </Col>
-              </Row>
-            </div>
-            <Nav className="ml-lg-auto" navbar>
-            <NavItem>
-              <Link to={"/home"}>
-                <NavLink>
-                  Home
-                </NavLink>
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link to={"/profile"}>
-                <NavLink>
-                  Profile
-                </NavLink>
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link to={"/portfolio"}>
-                <NavLink>
-                  Portfolio
-                </NavLink>
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link to={"/users"}>
-                <NavLink>
-                  Users
-                </NavLink>
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link to={"/jobs"}>
-                <NavLink>
-                  Jobs
-                </NavLink>
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link to={"/comments"}>
-                <NavLink>
-                  Comments
-                </NavLink>
-              </Link>
-            </NavItem>
-              <NavItem>
-                <Link to={"/logout"} onClick={this.logout}>
-                  <NavLink>
-                    Logout
-                  </NavLink>
-                </Link>
-              </NavItem>
-            </Nav>
-          </UncontrolledCollapse>
-        </Container>
+      <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+        <Navbar.Brand><Link to="/home" style={{all: 'unset'}}>Decentralized Filestore</Link></Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link><Link to="/space" style={{all: 'unset'}}>Space</Link></Nav.Link>
+            <Nav.Link><Link to="/logout" style={{all: 'unset'}} onClick={this.logout}>Logout</Link></Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
       </Navbar>
     )
   }
